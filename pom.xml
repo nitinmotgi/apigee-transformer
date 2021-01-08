@@ -67,6 +67,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <app.main.class>io.cdap.apigee.ApigeeWranglerApplication</app.main.class>
     <wrangler.version>4.4.0-SNAPSHOT</wrangler.version>
     <antlr4.version>4.7</antlr4.version>
     <antlr4-maven-plugin.version>4.7</antlr4-maven-plugin.version>
@@ -151,6 +152,11 @@
   <dependencies>
     <dependency>
       <groupId>io.cdap.wrangler</groupId>
+      <artifactId>wrangler-api</artifactId>
+      <version>${wrangler.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.cdap.wrangler</groupId>
       <artifactId>wrangler-core</artifactId>
       <version>${wrangler.version}</version>
     </dependency>
@@ -165,6 +171,11 @@
       <artifactId>cdap-etl-api</artifactId>
       <version>${cdap.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.cdap.cdap</groupId>
+      <artifactId>cdap-etl-core</artifactId>
+      <version>${cdap.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -229,12 +240,17 @@
           <version>3.3.0</version>
           <extensions>true</extensions>
           <configuration>
+            <archive>
+              <manifest>
+                <mainClass>${app.main.class}</mainClass>
+              </manifest>
+            </archive>
             <instructions>
               <Embed-Dependency>*;inline=false;scope=compile</Embed-Dependency>
               <Embed-Transitive>true</Embed-Transitive>
               <Embed-Directory>lib</Embed-Directory>
               <!--Only @Plugin classes in the export packages will be included as plugin-->
-              <_exportcontents>io.cdap.apigee.*</_exportcontents>
+              <_exportcontents>io.cdap.apigee.*;io.cdap.cdap.etl.*</_exportcontents>
             </instructions>
           </configuration>
           <executions>
@@ -351,6 +367,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>3.3.0</version>
       </plugin>
     </plugins>
   </build>
