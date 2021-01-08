@@ -25,6 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.HttpURLConnection;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import javax.annotation.Nullable;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
@@ -34,10 +37,38 @@ import javax.ws.rs.Path;
 public class WranglingHandler extends AbstractHttpServiceHandler {
   private static final Logger LOG = LoggerFactory.getLogger(WranglingHandler.class);
 
+  @Nullable
+  public String getContent(Charset charset, HttpServiceRequest request) {
+    ByteBuffer content = request.getContent();
+    if (content != null && content.hasRemaining()) {
+      return charset.decode(content).toString();
+    }
+    return null;
+  }
+
+  @Nullable
+  public String getHeader(HttpServiceRequest request, String name, String defaultValue) {
+    String header = request.getHeader(name);
+    return header == null ? defaultValue : header;
+  }
+
   @POST
   @Path("transform")
   @TransactionPolicy(value = TransactionControl.EXPLICIT)
   public void execute(HttpServiceRequest request, HttpServiceResponder responder) {
+    String contentType = getHeader(request, "Content-type", "text/plain");
+    String recipe = getHeader(request, "Recipe", null);
+
+    if (recipe == null) {
+      responder.sendStatus(HttpURLConnection.HTTP_BAD_REQUEST);
+      return;
+    }
+
+    String content = getContent(Charset.forName(contentType), request);
+    if (content == null) {
+      responder.sendStatus(HttpURLConnection.HTTP_BAD_REQUEST);
+    }
+    
     responder.sendStatus(HttpURLConnection.HTTP_OK);
   }
 

@@ -21,11 +21,11 @@ import io.cdap.cdap.api.app.AbstractApplication;
 /**
  * Apigee Wrangler Microservice.
  */
-public class ApigeeWranglerService extends AbstractApplication {
+public class ApigeeWranglerApplication extends AbstractApplication {
 
   @Override
   public void configure() {
-    setName("apigee-transformer");
+    setName("apigee-wrangler-app");
     setDescription("A microservice for transforming data synchronously");
 
     addService(new ApigeeTransformService());

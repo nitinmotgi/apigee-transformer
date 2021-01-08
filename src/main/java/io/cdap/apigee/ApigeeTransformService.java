@@ -25,7 +25,7 @@ public class ApigeeTransformService extends AbstractService {
 
   @Override
   protected void configure() {
-    setName("service");
+    setName("apigee-tx-service");
     addHandler(new WranglingHandler());
   }
 }
